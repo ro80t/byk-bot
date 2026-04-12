@@ -8,8 +8,7 @@
 		"start": "bun run src/index.ts",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"check": "tsc --noEmit",
-		"changesets": "npx @changesets/cli"
+		"check": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@types/bun": "latest"
@@ -18,7 +17,6 @@
 		"typescript": "^5"
 	},
 	"dependencies": {
-		"@changesets/cli": "^2.29.4",
 		"@eslint/compat": "^1.2.9",
 		"@eslint/js": "^9.26.0",
 		"@types/node": "^24.0.8",
