@@ -11,16 +11,16 @@
     "check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "@eslint/compat": "^1.2.9",
     "@eslint/js": "^9.26.0",
-    "eslint": "^9.26.0",
+    "@types/bun": "latest",
+    "eslint": "9.26.0",
+    "eslint-config-prettier": "10.1.8",
     "prettier": "3.8.2",
-    "typescript-eslint": "^8.32.0",
-    "eslint-config-prettier": "^10.1.5"
+    "typescript-eslint": "^8.32.0"
   },
   "peerDependencies": {
-    "typescript": "6.0.2"
+    "typescript": "5.8.0"
   },
   "dependencies": {
     "@types/node": "^24.0.8",
