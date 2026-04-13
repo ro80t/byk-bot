@@ -33,7 +33,7 @@ const client = new Client({
 });
 
 schedule(
-  "* 30 19 * * 1-5",
+  "30 19 * * 1-5",
   async () => {
     const targetCategoryIds = targetCategories.split(",");
     const channels = client.channels.cache.values();
@@ -63,7 +63,7 @@ schedule(
 );
 
 schedule(
-  "* * 5 * * 1-5",
+  "0 5 * * 1-5",
   async () => {
     const targetCategoryIds = targetCategories.split(",");
     const channels = client.channels.cache.values();
