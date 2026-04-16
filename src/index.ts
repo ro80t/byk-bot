@@ -7,8 +7,9 @@ const token = process.env.TOKEN;
 const noticeChannelId = process.env.NOTICE_CHANNEL;
 const targetCategories = process.env.TARGET_CATEGORIES;
 const roleId = process.env.ROLE_ID;
+const noticeRoleId = process.env.NOTICE_ROLE_ID;
 
-if (!token || !noticeChannelId || !targetCategories || !roleId) {
+if (!token || !noticeChannelId || !targetCategories || !roleId || !noticeRoleId) {
   throw new Error("Invalid .env");
 }
 
@@ -52,7 +53,7 @@ schedule(
           "予定通り開会いたします。本日も萬游會をご利用いただきありがとうございます。"
         );
       await noticeChannel.send({
-        content: `<@&${roleId}>`,
+        content: `<@&${noticeRoleId}>`,
         embeds: [embed]
       });
     }
