@@ -33,18 +33,23 @@ const client = new Client({
   ]
 });
 
+async function open(targetCategoryIds: string[], roleId: string) {
+  const channels = client.channels.cache.values();
+
+  for (const channel of channels) {
+    if (channel.type === ChannelType.GuildCategory && targetCategoryIds.includes(channel.id)) {
+      await channel.permissionOverwrites.create(roleId, { ViewChannel: true });
+    }
+  }
+}
+
 schedule(
   "30 16 * * 1-5",
   async () => {
     const targetCategoryIds = targetCategories.split(",");
-    const channels = client.channels.cache.values();
     const noticeChannel = client.channels.cache.get(noticeChannelId);
 
-    for (const channel of channels) {
-      if (channel.type === ChannelType.GuildCategory && targetCategoryIds.includes(channel.id)) {
-        await channel.permissionOverwrites.create(roleId, { ViewChannel: true });
-      }
-    }
+    await open(targetCategoryIds, roleId);
 
     if (noticeChannel?.type === ChannelType.GuildText) {
       const embed = new EmbedBuilder()
