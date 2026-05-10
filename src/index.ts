@@ -1,6 +1,12 @@
 import "dotenv/config";
 
-import { ChannelType, Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
+import {
+  ChannelType,
+  Client,
+  EmbedBuilder,
+  GatewayIntentBits,
+  type RESTPostAPIChatInputApplicationCommandsJSONBody
+} from "discord.js";
 import { schedule } from "node-cron";
 
 const token = process.env.TOKEN;
@@ -8,8 +14,9 @@ const noticeChannelId = process.env.NOTICE_CHANNEL;
 const targetCategories = process.env.TARGET_CATEGORIES;
 const roleId = process.env.ROLE_ID;
 const noticeRoleId = process.env.NOTICE_ROLE_ID;
+const guildId = process.env.GUILD_ID;
 
-if (!token || !noticeChannelId || !targetCategories || !roleId || !noticeRoleId) {
+if (!token || !noticeChannelId || !targetCategories || !roleId || !noticeRoleId || !guildId) {
   throw new Error("Invalid .env");
 }
 
@@ -51,6 +58,44 @@ async function close(targetCategoryIds: string[], roleId: string) {
     }
   }
 }
+
+client.on("clientReady", async (client) => {
+  await client.rest.put(`/applications/${client.user.id}/commands`, {
+    body: [
+      {
+        name: "open",
+        description: "手動開会"
+      },
+      {
+        name: "close",
+        description: "手動閉会"
+      }
+    ] satisfies RESTPostAPIChatInputApplicationCommandsJSONBody[]
+  });
+});
+
+client.on("interactionCreate", async (interaction) => {
+  if (interaction.isChatInputCommand()) {
+    if (interaction.guildId !== guildId) {
+      await interaction.reply({
+        content: "サーバーが違います。",
+        flags: ["Ephemeral"]
+      });
+    }
+    if (!interaction.memberPermissions?.has("Administrator")) {
+      await interaction.reply({
+        content: "権限がありません",
+        flags: ["Ephemeral"]
+      });
+    }
+    if (interaction.commandName === "open") {
+      await open(targetCategories.split(","), roleId);
+    }
+    if (interaction.commandName === "close") {
+      await close(targetCategories.split(","), roleId);
+    }
+  }
+});
 
 schedule(
   "30 16 * * 1-5",
