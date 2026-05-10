@@ -34,7 +34,7 @@ const client = new Client({
 });
 
 schedule(
-  "30 19 * * 1-5",
+  "30 16 * * 1-5",
   async () => {
     const targetCategoryIds = targetCategories.split(",");
     const channels = client.channels.cache.values();
@@ -80,7 +80,7 @@ schedule(
       const embed = new EmbedBuilder()
         .setTitle("閉会のお知らせ")
         .setDescription(
-          "本日はこれにて閉会です。開会は本日19:30となります。ご利用いただきありがとうございます。"
+          "本日はこれにて閉会です。開会は本日16:30となります。ご利用いただきありがとうございます。"
         );
       await noticeChannel.send({
         embeds: [embed]
