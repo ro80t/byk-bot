@@ -77,13 +77,13 @@ client.on("clientReady", async (client) => {
 client.on("interactionCreate", async (interaction) => {
   if (interaction.isChatInputCommand()) {
     if (interaction.guildId !== guildId) {
-      await interaction.reply({
+      return await interaction.reply({
         content: "サーバーが違います。",
         flags: ["Ephemeral"]
       });
     }
     if (!interaction.memberPermissions?.has("Administrator")) {
-      await interaction.reply({
+      return await interaction.reply({
         content: "権限がありません",
         flags: ["Ephemeral"]
       });
