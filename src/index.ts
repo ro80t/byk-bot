@@ -94,6 +94,10 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.commandName === "close") {
       await close(targetCategories.split(","), roleId);
     }
+    return await interaction.reply({
+      content: "変更しました",
+      flags: ["Ephemeral"]
+    });
   }
 });
 
