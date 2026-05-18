@@ -45,7 +45,7 @@ async function open(targetCategoryIds: string[], roleId: string) {
 
   for (const channel of channels) {
     if (channel.type === ChannelType.GuildCategory && targetCategoryIds.includes(channel.id)) {
-      await channel.permissionOverwrites.create(roleId, { ViewChannel: true });
+      await channel.permissionOverwrites.create(roleId, { ViewChannel: true, Connect: true });
     }
   }
 }
@@ -54,7 +54,7 @@ async function close(targetCategoryIds: string[], roleId: string) {
   const channels = client.channels.cache.values();
   for (const channel of channels) {
     if (channel.type === ChannelType.GuildCategory && targetCategoryIds.includes(channel.id)) {
-      await channel.permissionOverwrites.create(roleId, { ViewChannel: false });
+      await channel.permissionOverwrites.create(roleId, { ViewChannel: false, Connect: false });
     }
   }
 }
