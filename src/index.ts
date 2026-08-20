@@ -4,10 +4,11 @@ import {
   ChannelType,
   Client,
   //  EmbedBuilder,
-  GatewayIntentBits
+  GatewayIntentBits,
+  PermissionFlagsBits
   //  type RESTPostAPIChatInputApplicationCommandsJSONBody
 } from "discord.js";
-// import { schedule } from "node-cron";
+import { schedule } from "node-cron";
 
 const token = process.env.TOKEN;
 const noticeChannelId = process.env.NOTICE_CHANNEL;
@@ -85,6 +86,23 @@ async function syncRestrictedMemberVoicePermission(targetCategoryIds: string[], 
       await channel.permissionOverwrites.create(restrictedMemberId, {
         Connect: shouldRestrict ? false : null
       });
+    }
+  }
+}
+
+async function reconcileRestrictedMemberVoicePermission(
+  targetCategoryIds: string[],
+  guildId: string
+) {
+  if (isWatchedRoleMemberInVoice(guildId)) return;
+
+  const channels = client.channels.cache.values();
+  for (const channel of channels) {
+    if (channel.type === ChannelType.GuildCategory && targetCategoryIds.includes(channel.id)) {
+      const overwrite = channel.permissionOverwrites.cache.get(restrictedMemberId);
+      if (overwrite?.deny.has(PermissionFlagsBits.Connect)) {
+        await channel.permissionOverwrites.create(restrictedMemberId, { Connect: null });
+      }
     }
   }
 }
@@ -186,5 +204,15 @@ client.on("interactionCreate", async (interaction) => {
 //    timezone: "Asia/Tokyo"
 //  }
 //);
+
+schedule(
+  "* * * * *",
+  async () => {
+    await reconcileRestrictedMemberVoicePermission(targetCategories.split(","), guildId);
+  },
+  {
+    timezone: "Asia/Tokyo"
+  }
+);
 
 await client.login(token);
