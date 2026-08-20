@@ -3,11 +3,11 @@ import "dotenv/config";
 import {
   ChannelType,
   Client,
-  EmbedBuilder,
+//  EmbedBuilder,
   GatewayIntentBits,
-  type RESTPostAPIChatInputApplicationCommandsJSONBody
+//  type RESTPostAPIChatInputApplicationCommandsJSONBody
 } from "discord.js";
-import { schedule } from "node-cron";
+//import { schedule } from "node-cron";
 
 const token = process.env.TOKEN;
 const noticeChannelId = process.env.NOTICE_CHANNEL;
@@ -59,20 +59,20 @@ async function close(targetCategoryIds: string[], roleId: string) {
   }
 }
 
-client.on("clientReady", async (client) => {
-  await client.rest.put(`/applications/${client.user.id}/commands`, {
-    body: [
-      {
-        name: "open",
-        description: "手動開会"
-      },
-      {
-        name: "close",
-        description: "手動閉会"
-      }
-    ] satisfies RESTPostAPIChatInputApplicationCommandsJSONBody[]
-  });
-});
+//client.on("clientReady", async (client) => {
+//  await client.rest.put(`/applications/${client.user.id}/commands`, {
+//    body: [
+//      {
+//        name: "open",
+//        description: "手動開会"
+//      },
+//      {
+//        name: "close",
+//        description: "手動閉会"
+//      }
+//    ] satisfies RESTPostAPIChatInputApplicationCommandsJSONBody[]
+//  });
+//});
 
 client.on("interactionCreate", async (interaction) => {
   if (interaction.isChatInputCommand()) {
@@ -101,53 +101,53 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-schedule(
-  "30 16 * * 1-5",
-  async () => {
-    const targetCategoryIds = targetCategories.split(",");
-    const noticeChannel = client.channels.cache.get(noticeChannelId);
-
-    await open(targetCategoryIds, roleId);
-
-    if (noticeChannel?.type === ChannelType.GuildText) {
-      const embed = new EmbedBuilder()
-        .setTitle("開会のお知らせ")
-        .setDescription(
-          "予定通り開会いたします。本日も萬游會をご利用いただきありがとうございます。"
-        );
-      await noticeChannel.send({
-        content: `<@&${noticeRoleId}>`,
-        embeds: [embed]
-      });
-    }
-  },
-  {
-    timezone: "Asia/Tokyo"
-  }
-);
-
-schedule(
-  "0 5 * * 1-5",
-  async () => {
-    const targetCategoryIds = targetCategories.split(",");
-    const noticeChannel = client.channels.cache.get(noticeChannelId);
-
-    await close(targetCategoryIds, roleId);
-
-    if (noticeChannel?.type === ChannelType.GuildText) {
-      const embed = new EmbedBuilder()
-        .setTitle("閉会のお知らせ")
-        .setDescription(
-          "本日はこれにて閉会です。開会は本日16:30となります。ご利用いただきありがとうございます。"
-        );
-      await noticeChannel.send({
-        embeds: [embed]
-      });
-    }
-  },
-  {
-    timezone: "Asia/Tokyo"
-  }
-);
+//schedule(
+//  "30 16 * * 1-5",
+//  async () => {
+//    const targetCategoryIds = targetCategories.split(",");
+//    const noticeChannel = client.channels.cache.get(noticeChannelId);
+//
+//    await open(targetCategoryIds, roleId);
+//
+//    if (noticeChannel?.type === ChannelType.GuildText) {
+//      const embed = new EmbedBuilder()
+//        .setTitle("開会のお知らせ")
+//        .setDescription(
+//          "予定通り開会いたします。本日も萬游會をご利用いただきありがとうございます。"
+//        );
+//      await noticeChannel.send({
+//        content: `<@&${noticeRoleId}>`,
+//        embeds: [embed]
+//      });
+//    }
+//  },
+//  {
+//    timezone: "Asia/Tokyo"
+//  }
+//);
+//
+//schedule(
+//  "0 5 * * 1-5",
+//  async () => {
+//    const targetCategoryIds = targetCategories.split(",");
+//    const noticeChannel = client.channels.cache.get(noticeChannelId);
+//
+//    await close(targetCategoryIds, roleId);
+//
+//    if (noticeChannel?.type === ChannelType.GuildText) {
+//      const embed = new EmbedBuilder()
+//        .setTitle("閉会のお知らせ")
+//        .setDescription(
+//          "本日はこれにて閉会です。開会は本日16:30となります。ご利用いただきありがとうございます。"
+//        );
+//      await noticeChannel.send({
+//        embeds: [embed]
+//      });
+//    }
+//  },
+//  {
+//    timezone: "Asia/Tokyo"
+//  }
+//);
 
 await client.login(token);
