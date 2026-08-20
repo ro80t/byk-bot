@@ -3,11 +3,11 @@ import "dotenv/config";
 import {
   ChannelType,
   Client,
-//  EmbedBuilder,
-  GatewayIntentBits,
-//  type RESTPostAPIChatInputApplicationCommandsJSONBody
+  //  EmbedBuilder,
+  GatewayIntentBits
+  //  type RESTPostAPIChatInputApplicationCommandsJSONBody
 } from "discord.js";
-//import { schedule } from "node-cron";
+// import { schedule } from "node-cron";
 
 const token = process.env.TOKEN;
 const noticeChannelId = process.env.NOTICE_CHANNEL;
@@ -59,6 +59,36 @@ async function close(targetCategoryIds: string[], roleId: string) {
   }
 }
 
+const watchedRoleId = "1509937594161561620";
+const restrictedMemberId = "1393865764737519656";
+
+function isWatchedRoleMemberInVoice(guildId: string) {
+  const guild = client.guilds.cache.get(guildId);
+  if (!guild) return false;
+
+  for (const channel of guild.channels.cache.values()) {
+    if (!channel.isVoiceBased()) continue;
+    for (const member of channel.members.values()) {
+      if (member.roles.cache.has(watchedRoleId)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+async function syncRestrictedMemberVoicePermission(targetCategoryIds: string[], guildId: string) {
+  const shouldRestrict = isWatchedRoleMemberInVoice(guildId);
+  const channels = client.channels.cache.values();
+  for (const channel of channels) {
+    if (channel.type === ChannelType.GuildCategory && targetCategoryIds.includes(channel.id)) {
+      await channel.permissionOverwrites.create(restrictedMemberId, {
+        Connect: shouldRestrict ? false : null
+      });
+    }
+  }
+}
+
 //client.on("clientReady", async (client) => {
 //  await client.rest.put(`/applications/${client.user.id}/commands`, {
 //    body: [
@@ -73,6 +103,13 @@ async function close(targetCategoryIds: string[], roleId: string) {
 //    ] satisfies RESTPostAPIChatInputApplicationCommandsJSONBody[]
 //  });
 //});
+
+client.on("voiceStateUpdate", async (oldState, newState) => {
+  const member = newState.member ?? oldState.member;
+  if (!member?.roles.cache.has(watchedRoleId)) return;
+
+  await syncRestrictedMemberVoicePermission(targetCategories.split(","), guildId);
+});
 
 client.on("interactionCreate", async (interaction) => {
   if (interaction.isChatInputCommand()) {
